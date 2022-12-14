@@ -2,7 +2,7 @@
 A shopping app is built using flutter &amp; dart (for front-end part) and firebase was used for (backend).
 
 ## Home Page of shop app.
-![image](https://user-images.githubusercontent.com/59877793/207669262-1362b5d6-7dd4-42f5-84f1-3bcd4edeca46.png)
+![HomePage](https://user-images.githubusercontent.com/59877793/207670217-964c522d-6043-45f8-80aa-aabe45e7a4f8.jpg)
 
 ## Side drawer of shop app.
 ![SideDrawerPage](https://user-images.githubusercontent.com/59877793/207669541-c4ad5723-ef75-454f-bef7-b4694673bed6.jpg)
