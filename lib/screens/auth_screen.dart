@@ -1,6 +1,9 @@
 import 'dart:math';
-
+import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
+import '../providers/auth.dart';
+import '../screens/cart_screen.dart';
+import '../models/http_exception.dart';
 
 enum AuthMode { Signup, Login }
 
@@ -59,7 +62,8 @@ class AuthScreen extends StatelessWidget {
                       child: Text(
                         'MyShop',
                         style: TextStyle(
-                          color: Theme.of(context).accentTextTheme.headline6.color,
+                          color:
+                              Theme.of(context).accentTextTheme.headline6.color,
                           fontSize: 50,
                           fontFamily: 'Anton',
                           fontWeight: FontWeight.normal,
@@ -100,7 +104,21 @@ class _AuthCardState extends State<AuthCard> {
   var _isLoading = false;
   final _passwordController = TextEditingController();
 
-  void _submit() {
+  void _showErrorDialog(String message) {
+    showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+              title: Text('An error occurred!'),
+              content: Text(message),
+              actions: <Widget>[
+                TextButton(child: Text('Okay') ,onPressed: (){
+                  Navigator.of(ctx).pop();
+                }, )
+              ],
+            ));
+  }
+
+  Future<void> _submit() async {
     if (!_formKey.currentState.validate()) {
       // Invalid!
       return;
@@ -109,11 +127,40 @@ class _AuthCardState extends State<AuthCard> {
     setState(() {
       _isLoading = true;
     });
-    if (_authMode == AuthMode.Login) {
-      // Log user in
-    } else {
-      // Sign user up
+
+    try {
+      if (_authMode == AuthMode.Login) {
+        // Log user in
+        await Provider.of<Auth>(context, listen: false).login(
+          _authData['email'],
+          _authData['password'],
+        );
+      } else {
+        // Sign user up
+        await Provider.of<Auth>(context, listen: false).signup(
+          _authData['email'],
+          _authData['password'],
+        );
+      }
+    } on HttpException catch (error) {
+      var errorMessage = 'Authentication failed: please, connect later!';
+      if (error.toString().contains('EMAIL_EXISTS')) {
+        errorMessage = 'This email exists already!';
+      } else if (error.toString().contains('INVALID_EMAIL')) {
+        errorMessage = 'This is not a valid email!';
+      } else if (error.toString().contains('WEAK_PASSWORD')) {
+        errorMessage = 'This password is too weak!';
+      } else if (error.toString().contains('EMAIL_NOT_FOUND')) {
+        errorMessage = 'Could not find a user with that email';
+      } else if (error.toString().contains('INVALID_PASSWORD')) {
+        errorMessage = 'Invalid Password!';
+      }
+      _showErrorDialog(errorMessage);
+    } catch (error) {
+      var errorMessage = 'Authentication failed: please, connect later!';
+      _showErrorDialog(errorMessage);
     }
+
     setState(() {
       _isLoading = false;
     });
@@ -202,23 +249,26 @@ class _AuthCardState extends State<AuthCard> {
                         Text(_authMode == AuthMode.Login ? 'LOGIN' : 'SIGN UP'),
                     onPressed: _submit,
                     style: ElevatedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 30.0, vertical: 8.0),
+                      primary: Theme.of(context).primaryColor,
+                      // textStyle: const TextStyle(primary: Theme.of(context).primaryTextTheme.button.color),
                     ),
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 30.0, vertical: 8.0),
-                    primary: Theme.of(context).primaryColor,
-                    // textStyle: const TextStyle(primary: Theme.of(context).primaryTextTheme.button.color),
-                  ),),
+                  ),
                 TextButton(
                   child: Text(
                       '${_authMode == AuthMode.Login ? 'SIGNUP' : 'LOGIN'} INSTEAD'),
                   onPressed: _switchAuthMode,
                   style: TextButton.styleFrom(
-                  padding: EdgeInsets.symmetric(horizontal: 30.0, vertical: 4),
-                  // materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  primary: Theme.of(context).primaryColor,
-                ),),
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 30.0, vertical: 4),
+                    // materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    primary: Theme.of(context).primaryColor,
+                  ),
+                ),
               ],
             ),
           ),
