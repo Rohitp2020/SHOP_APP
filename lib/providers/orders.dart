@@ -1,8 +1,9 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter_complete_guide/providers/products.dart';
-import './cart.dart';
-import 'package:http/http.dart' as http;
 import 'dart:convert';
+
+import 'package:flutter/foundation.dart';
+import 'package:http/http.dart' as http;
+
+import './cart.dart';
 
 class OrderItem {
   final String id;
@@ -88,3 +89,11 @@ class Orders with ChangeNotifier {
     notifyListeners();
   }
 }
+
+
+
+
+
+
+final url = Uri.parse(
+        'https://flutter-update-e8fd4-default-rtdb.firebaseio.com/orders.json');

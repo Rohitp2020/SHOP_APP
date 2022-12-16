@@ -52,7 +52,8 @@ class _OrdersScreenState extends State<OrdersScreen> {
                   child: Text('An error occured!'),
                 );
               } else {
-                return Consumer(
+                // var orders;
+                return Consumer<Orders>(
                   builder: (ctx, orderData, child) => ListView.builder(
                     itemCount: orderData.orders.length,
                     itemBuilder: (ctx, i) => OrderItem(orderData.orders[i]),
