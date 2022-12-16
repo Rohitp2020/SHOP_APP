@@ -95,5 +95,3 @@ class Orders with ChangeNotifier {
 
 
 
-final url = Uri.parse(
-        'https://flutter-update-e8fd4-default-rtdb.firebaseio.com/orders.json');
