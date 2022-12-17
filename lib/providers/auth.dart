@@ -80,7 +80,7 @@ class Auth with ChangeNotifier {
     return _authenticate(email, password, 'signInWithPassword');
   }
 
-  Future<void> tryAutoLogin() async {
+  Future<bool> tryAutoLogin() async {
     final prefs = await SharedPreferences.getInstance();
     if(!prefs.containsKey('userDate')){
       return false;
